@@ -1,6 +1,7 @@
 package com.gihan.AIAuditEngine.controller;
 
 import com.gihan.AIAuditEngine.dto.UserRequestDTO;
+import com.gihan.AIAuditEngine.entity.Organization;
 import com.gihan.AIAuditEngine.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

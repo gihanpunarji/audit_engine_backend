@@ -12,4 +12,6 @@ public class UserRequestDTO {
     private String lName;
     private String email;
     private String password;
+    private String organizationName;
+    private String organizationSlug;
 }

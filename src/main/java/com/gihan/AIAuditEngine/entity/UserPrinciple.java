@@ -1,6 +1,5 @@
 package com.gihan.AIAuditEngine.entity;
 
-import kotlin.collections.EmptyList;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +11,7 @@ public class UserPrinciple implements UserDetails {
 
     User user;
 
-    public  UserPrinciple(User user) {
+    public UserPrinciple(User user) {
         this.user = user;
     }
 
