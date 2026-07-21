@@ -1,6 +1,5 @@
 package com.gihan.AIAuditEngine.service.impl;
 
-import com.gihan.AIAuditEngine.dto.OrganizationRequestDTO;
 import com.gihan.AIAuditEngine.entity.Organization;
 import com.gihan.AIAuditEngine.repository.OrganizationRepo;
 import com.gihan.AIAuditEngine.service.OrganizationService;
@@ -18,23 +17,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     public OrganizationServiceImpl(OrganizationRepo organizationRepo) {
         this.organizationRepo = organizationRepo;
-    }
-
-    @Override
-    public String createOrganization(OrganizationRequestDTO dto) {
-        if (organizationRepo.existsBySlug(dto.getSlug())) {
-            return "Organization with this slug already exists";
-        }
-        if (organizationRepo.existsByName(dto.getName())) {
-            return "Organization with this name already exists";
-        }
-
-        Organization organization = new Organization();
-        organization.setName(dto.getName());
-        organization.setSlug(dto.getSlug().toLowerCase().trim());
-
-        organizationRepo.save(organization);
-        return "Organization created successfully";
     }
 
     @Override

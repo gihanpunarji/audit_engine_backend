@@ -1,6 +1,5 @@
 package com.gihan.AIAuditEngine.controller;
 
-import com.gihan.AIAuditEngine.dto.OrganizationRequestDTO;
 import com.gihan.AIAuditEngine.entity.Organization;
 import com.gihan.AIAuditEngine.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,7 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
-    @PostMapping("/create")
-    public String createOrganization(@RequestBody OrganizationRequestDTO dto) {
-        return organizationService.createOrganization(dto);
-    }
-
-    @GetMapping
+    @GetMapping("/")
     public List<Organization> getAllOrganizations() {
         return organizationService.getAllOrganizations();
     }
