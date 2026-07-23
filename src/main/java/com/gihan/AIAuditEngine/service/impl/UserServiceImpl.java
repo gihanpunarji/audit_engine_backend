@@ -11,6 +11,7 @@ import com.gihan.AIAuditEngine.service.JWTService;
 import com.gihan.AIAuditEngine.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,11 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Autowired
-    public UserServiceImpl(UserRepo userRepo, OrganizationRepo organizationRepo, UserMapper userMapper, AuthenticationManager authManager, JWTService jwtService) {
+    public UserServiceImpl(UserRepo userRepo,
+                           OrganizationRepo organizationRepo,
+                           UserMapper userMapper,
+                           @Lazy AuthenticationManager authManager,
+                           JWTService jwtService) {
         this.userRepo = userRepo;
         this.organizationRepo = organizationRepo;
         this.userMapper = userMapper;
