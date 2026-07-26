@@ -1,5 +1,6 @@
 package com.gihan.AIAuditEngine.service.impl;
 
+import com.gihan.AIAuditEngine.dto.AuditFindingResponseDTO;
 import com.gihan.AIAuditEngine.dto.AuditResponseDTO;
 import com.gihan.AIAuditEngine.entity.*;
 import com.gihan.AIAuditEngine.repository.AuditRepo;
@@ -22,16 +23,22 @@ public class AuditServiceImpl implements AuditService {
     private final AuditTargetRepo auditTargetRepo;
     private final UserRepo userRepo;
     private final S3Service s3Service;
+    private final com.gihan.AIAuditEngine.repository.AuditFindingRepo auditFindingRepo;
+    private final com.gihan.AIAuditEngine.service.AiAuditProcessorService aiAuditProcessorService;
 
     @Autowired
     public AuditServiceImpl(AuditRepo auditRepo,
                             AuditTargetRepo auditTargetRepo,
                             UserRepo userRepo,
-                            S3Service s3Service) {
+                            S3Service s3Service,
+                            com.gihan.AIAuditEngine.repository.AuditFindingRepo auditFindingRepo,
+                            com.gihan.AIAuditEngine.service.AiAuditProcessorService aiAuditProcessorService) {
         this.auditRepo = auditRepo;
         this.auditTargetRepo = auditTargetRepo;
         this.userRepo = userRepo;
         this.s3Service = s3Service;
+        this.auditFindingRepo = auditFindingRepo;
+        this.aiAuditProcessorService = aiAuditProcessorService;
     }
 
     @Override
@@ -69,6 +76,10 @@ public class AuditServiceImpl implements AuditService {
         audit.setStatus(AuditStatus.PENDING);
 
         Audit saved = auditRepo.save(audit);
+
+        // Trigger AI processing in the background asynchronously
+        aiAuditProcessorService.processAuditAsync(saved.getId());
+
         return toResponseDTO(saved);
     }
 
@@ -85,6 +96,22 @@ public class AuditServiceImpl implements AuditService {
         Audit audit = auditRepo.findById(auditId)
                 .orElseThrow(() -> new RuntimeException("Audit not found: " + auditId));
         return toResponseDTO(audit);
+    }
+
+    @Override
+    public List<AuditFindingResponseDTO> getFindingsByAudit(UUID auditId) {
+        return auditFindingRepo.findByAuditId(auditId).stream()
+                .map(finding -> new com.gihan.AIAuditEngine.dto.AuditFindingResponseDTO(
+                        finding.getId(),
+                        finding.getAudit().getId(),
+                        finding.getCategory(),
+                        finding.getTitle(),
+                        finding.getDescription(),
+                        finding.getRecommendation(),
+                        finding.getSeverity(),
+                        finding.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 
     // --- Private mapper helper ---

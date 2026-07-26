@@ -36,6 +36,7 @@ public class AuditTargetController {
     @GetMapping("/organization/{organizationId}")
     public ResponseEntity<List<AuditTargetResponseDTO>> getTargetsByOrganization(
             @PathVariable UUID organizationId) {
+        System.out.println("id " + organizationId);
 
         return ResponseEntity.ok(auditTargetService.getTargetsByOrganization(organizationId));
     }

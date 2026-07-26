@@ -48,4 +48,11 @@ public class AuditController {
     public ResponseEntity<AuditResponseDTO> getAuditById(@PathVariable UUID auditId) {
         return ResponseEntity.ok(auditService.getAuditById(auditId));
     }
+
+    @GetMapping("/{auditId}/findings")
+    public ResponseEntity<List<com.gihan.AIAuditEngine.dto.AuditFindingResponseDTO>> getFindingsByAudit(
+            @PathVariable UUID auditId) {
+
+        return ResponseEntity.ok(auditService.getFindingsByAudit(auditId));
+    }
 }

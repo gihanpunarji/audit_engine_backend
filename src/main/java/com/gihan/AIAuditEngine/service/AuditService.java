@@ -13,4 +13,6 @@ public interface AuditService {
     List<AuditResponseDTO> getAuditsByTarget(UUID auditTargetId);
 
     AuditResponseDTO getAuditById(UUID auditId);
+
+    List<com.gihan.AIAuditEngine.dto.AuditFindingResponseDTO> getFindingsByAudit(UUID auditId);
 }
