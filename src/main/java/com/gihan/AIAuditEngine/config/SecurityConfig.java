@@ -3,6 +3,7 @@ package com.gihan.AIAuditEngine.config;
 
 import com.gihan.AIAuditEngine.filter.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,9 @@ public class SecurityConfig {
 
     private JWTFilter jwtFilter;
 
+    @Value("${spring.api.frontend_url}")
+    private String apiURL;
+
     @Autowired
     public SecurityConfig(JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
@@ -55,7 +59,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "https://*.vercel.app"));
+        configuration.setAllowedOriginPatterns(List.of(apiURL));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
