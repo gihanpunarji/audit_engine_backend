@@ -22,12 +22,12 @@ public class AuthController {
     }
 
     @PostMapping("/create")
-    private String createUser(@RequestBody UserRequestDTO userRequestDTO) {
+    public String createUser(@RequestBody UserRequestDTO userRequestDTO) {
         return userService.createUser(userRequestDTO);
     }
 
     @PostMapping("/login")
-    private String loginUser(@RequestBody UserRequestDTO userRequestDTO) {
+    public String loginUser(@RequestBody UserRequestDTO userRequestDTO) {
         return userService.verifyUser(userRequestDTO);
     }
 
