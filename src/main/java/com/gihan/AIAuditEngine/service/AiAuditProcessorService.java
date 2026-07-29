@@ -34,9 +34,9 @@ public class AiAuditProcessorService {
 
     @Autowired
     public AiAuditProcessorService(ChatModel chatModel,
-                                 S3Service s3Service,
-                                 AuditRepo auditRepo,
-                                 AuditFindingRepo auditFindingRepo) {
+            S3Service s3Service,
+            AuditRepo auditRepo,
+            AuditFindingRepo auditFindingRepo) {
         this.chatModel = chatModel;
         this.s3Service = s3Service;
         this.auditRepo = auditRepo;
@@ -64,29 +64,32 @@ public class AiAuditProcessorService {
 
             // Build AI prompt
             String promptText = """
-                You are an enterprise document auditor AI engine.
-                Analyze the attached business document (%s document type: %s).
-                
-                Perform 2 tasks:
-                1. Extract all structured business data (fields, dates, values, line items, metadata).
-                2. Audit the document for compliance, mathematical errors, suspicious values, policy violations, or anomalies.
-                
-                Respond ONLY with a valid JSON object matching this exact schema:
-                {
-                  "extractedData": { ... any key-value structured data extracted ... },
-                  "findings": [
+                    You are an enterprise document auditor AI engine.
+                    Analyze the attached business document (%s document type: %s).
+
+                    Perform 3 tasks:
+                    1. Extract all structured business data (fields, dates, values, line items, metadata).
+                    2. Audit the document for compliance, mathematical errors, suspicious values, policy violations, or anomalies.
+                    3. Give a conclusion at the end wheather the uploaded document is legit or a fake one, like a scam.
+
+                    Respond ONLY with a valid JSON object matching this exact schema:
                     {
-                      "category": "CATEGORY_NAME",
-                      "title": "Short summary title",
-                      "description": "Detailed explanation of what is wrong or notable",
-                      "recommendation": "Suggested action",
-                      "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFO"
+                      "extractedData": { ... any key-value structured data extracted ... },
+                      "findings": [
+                        {
+                          "category": "CATEGORY_NAME",
+                          "title": "Short summary title",
+                          "description": "Detailed explanation of what is wrong or notable",
+                          "recommendation": "Suggested action",
+                          "conclusion": "whether the uploaded document is legit or a fake one, like a scam",
+                          "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFO"
+                        }
+                      ]
                     }
-                  ]
-                }
-                
-                Do not include markdown code block backticks if possible, just return raw valid JSON.
-                """.formatted(audit.getAuditTarget().getName(), audit.getAuditTarget().getDocumentType());
+
+                    Do not include markdown code block backticks if possible, just return raw valid JSON.
+                    """
+                    .formatted(audit.getAuditTarget().getName(), audit.getAuditTarget().getDocumentType());
 
             Media media = new Media(MimeTypeUtils.parseMimeType(mimeType), new InputStreamResource(fileStream));
             UserMessage userMessage = UserMessage.builder()
@@ -120,7 +123,7 @@ public class AiAuditProcessorService {
                     finding.setTitle(findingNode.path("title").asText("Anomaly Detected"));
                     finding.setDescription(findingNode.path("description").asText());
                     finding.setRecommendation(findingNode.path("recommendation").asText());
-                    
+
                     String severityStr = findingNode.path("severity").asText("MEDIUM").toUpperCase();
                     try {
                         finding.setSeverity(FindingSeverity.valueOf(severityStr));
@@ -147,12 +150,17 @@ public class AiAuditProcessorService {
     }
 
     private String determineMimeType(String filename) {
-        if (filename == null) return "application/octet-stream";
+        if (filename == null)
+            return "application/octet-stream";
         String lower = filename.toLowerCase();
-        if (lower.endsWith(".pdf")) return "application/pdf";
-        if (lower.endsWith(".png")) return "image/png";
-        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-        if (lower.endsWith(".webp")) return "image/webp";
+        if (lower.endsWith(".pdf"))
+            return "application/pdf";
+        if (lower.endsWith(".png"))
+            return "image/png";
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg"))
+            return "image/jpeg";
+        if (lower.endsWith(".webp"))
+            return "image/webp";
         return "application/octet-stream";
     }
 }
